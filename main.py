@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 import xml.etree.ElementTree as ET
 def get_songs():
+    playlist_name = str()
     url  = "https://api.spotify.com."
     try:
         if url.strip():
@@ -33,22 +34,25 @@ def get_songs():
 
                     # Construct playlist URL
                     playlist_url = "https://api.spotify.com/v1/playlists/"
-                    playlist_id = "3L0NJpTEIAfubSp7uUxcLq?si=5b9b7c124a4d4812"
+                    playlist_id = "3L0NJpTEIAfubSp7uUxcLq?si=be0bb2000e604376"
                     endpoint = playlist_url + playlist_id + "/tracks"
-
+                    params={'offset': 300, 'limit': 300}
                     # Send GET request to retrieve playlist data
-                    get_response = requests.get(url=endpoint, headers=headers)
+                    get_response = requests.get(url=endpoint, headers=headers, params=params)
 
                     # Check for successful response
                     if get_response.status_code == 200:
                         spotify_data = get_response.json()
-                        print(f"Spotify Data = {spotify_data.keys()}")
+                        # print(f"Spotify Data = {spotify_data.keys()}")
                         playlist_name =  spotify_data['name']
                         tracks_detail = spotify_data['tracks']
                         tracks = tracks_detail['items']
-                        print(f"Tracks = {tracks}")
-
-                        print(f"Playlist Name = {playlist_name}")
+                        print(f"Total number of Tracks = {len(tracks)}")
+                        for track in tracks:
+                            track_name = track['track']['name']
+                            artist_name = track['track']['album']['artists'][0]['name']
+                            print(f"{track_name} by {artist_name}")
+                        #TODO: get the tracks items and then the tracks detail
                     else:
                         print(f"Error: {get_response.status_code}")
                 else:

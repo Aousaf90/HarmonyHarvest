@@ -65,7 +65,7 @@ playlist_name = str()
 songs_detail = dict()
 playlist_name, songs_detail = get_songs()
 
-print(f"Playlist = {playlist_name}")
+# print(f"Playlist = {playlist_name}")
 
 for songs, artist in songs_detail.items():
     print(f"{songs}".rjust(10) + f" -------------->   {artist}".rjust(10))

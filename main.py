@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from pathlib import Path
+from pytube import YouTube
 import requests
 def get_songs():
     playlist_name = str()
@@ -33,7 +34,7 @@ def get_songs():
 
                     # Construct playlist URL
                     playlist_url = "https://api.spotify.com/v1/playlists/"
-                    playlist_id = "0WjbiLvj3ahKkit5N6NEEU?si=c0392ee4d3784f69"
+                    playlist_id = "3L0NJpTEIAfubSp7uUxcLq?si=3cce64c541694ca4"
                     endpoint = playlist_url + playlist_id + "/tracks"
                     params={'offset': 300, 'limit': 300}
                     # Send GET request to retrieve playlist data
@@ -56,16 +57,20 @@ def get_songs():
                         print(f"Error: {get_response.status_code}")
                 else:
                     print(f"Error: {post_request.status_code}")
+            return playlist_name, songs_detail
     except requests.exceptions.RequestException as e:
         RuntimeError(f"API request ERROR = {e}")
     return playlist_name, songs_detail
 
+def download_video():
+    pass
 
 playlist_name = str()
 songs_detail = dict()
 playlist_name, songs_detail = get_songs()
 
-# print(f"Playlist = {playlist_name}")
+
+print(f"Playlist = {playlist_name}")
 
 for songs, artist in songs_detail.items():
     print(f"{songs}".rjust(10) + f" -------------->   {artist}".rjust(10))
@@ -83,3 +88,4 @@ for songs, artist in songs_detail.items():
 # playlist_link_windget.pack()
 # canvas.pack()
 # Tk.mainloop()
+ 

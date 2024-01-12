@@ -31,10 +31,9 @@ def get_songs():
                         'Authorization': 'Bearer ' + access_token,
                         'Accept': 'application/json'
                     }
-
                     # Construct playlist URL
                     playlist_url = "https://api.spotify.com/v1/playlists/"
-                    playlist_id = "3L0NJpTEIAfubSp7uUxcLq?si=3cce64c541694ca4"
+                    playlist_id = "3j1ud3Mk6O3xnJH5JNf9ry?si=92f14da7f8f243e1"
                     endpoint = playlist_url + playlist_id + "/tracks"
                     params={'offset': 300, 'limit': 300}
                     # Send GET request to retrieve playlist data

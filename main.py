@@ -52,7 +52,6 @@ def get_songs():
                             track_name = track['track']['name']
                             artist_name = track['track']['album']['artists'][0]['name']
                             songs_detail[track_name] = artist_name
-                        #TODO: get the tracks items and then the tracks detail
                     else:
                         print(f"Error: {get_response.status_code}")
                 else:
@@ -61,12 +60,14 @@ def get_songs():
     except requests.exceptions.RequestException as e:
         RuntimeError(f"API request ERROR = {e}")
     return playlist_name, songs_detail
-
+def search_youtube():
+    pass
 def download_video():
     pass
 
 playlist_name = str()
 songs_detail = dict()
+# TODO: "Get playlist url and then pass it to get_songs()"
 playlist_name, songs_detail = get_songs()
 
 
@@ -88,4 +89,3 @@ for songs, artist in songs_detail.items():
 # playlist_link_windget.pack()
 # canvas.pack()
 # Tk.mainloop()
- 

@@ -1,9 +1,15 @@
 from tkinter import *
 from tkinter import ttk
-from pathlib import Path
 from pytube import YouTube
 import requests
-def get_songs():
+import re
+import urllib.request
+import ssl
+import os
+
+def get_songs(playlist_url = ""):
+
+    playlist_id = playlist_url.split("/")[-1]
     playlist_name = str()
     songs_detail = dict()
     url  = "https://api.spotify.com."
@@ -33,7 +39,6 @@ def get_songs():
                     }
                     # Construct playlist URL
                     playlist_url = "https://api.spotify.com/v1/playlists/"
-                    playlist_id = "3j1ud3Mk6O3xnJH5JNf9ry?si=92f14da7f8f243e1"
                     endpoint = playlist_url + playlist_id + "/tracks"
                     params={'offset': 300, 'limit': 300}
                     # Send GET request to retrieve playlist data
@@ -42,11 +47,9 @@ def get_songs():
                     # Check for successful response
                     if get_response.status_code == 200:
                         spotify_data = get_response.json()
-                        # print(f"Spotify Data = {spotify_data.keys()}")
                         playlist_name =  spotify_data['name']
                         tracks_detail = spotify_data['tracks']
                         tracks = tracks_detail['items']
-                        print(f"Total number of Tracks = {len(tracks)}")
                         for track in tracks:
                             track_name = track['track']['name']
                             artist_name = track['track']['album']['artists'][0]['name']
@@ -59,32 +62,38 @@ def get_songs():
     except requests.exceptions.RequestException as e:
         RuntimeError(f"API request ERROR = {e}")
     return playlist_name, songs_detail
-def search_youtube():
-    pass
-def download_video():
-    pass
-
-playlist_name = str()
-songs_detail = dict()
-# TODO: "Get playlist url and then pass it to get_songs()"
-playlist_name, songs_detail = get_songs()
 
 
-print(f"Playlist = {playlist_name}")
+def search_youtube(songs, artist):
+    keyword = songs +" by "+ artist
+    keyword = keyword.split(" ")
+    if len(keyword) > 1:
+        keyword = "+".join(keyword)
+    if "&" in keyword:
+        keyword = keyword.replace("&", "%26")
+    youtube_url = "https://www.youtube.com/results?search_query=" + keyword
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    html = urllib.request.urlopen(youtube_url, context=context)
+    videos_result = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+    video_url =  "https://www.youtube.com/watch?v=" + videos_result[0]
+    return video_url
 
-for songs, artist in songs_detail.items():
-    print(f"{songs}".rjust(10) + f" -------------->   {artist}".rjust(10))
-# Tk = Tk()
-# playlist_link = StringVar()
-# canvas = Canvas(Tk, width= 100, height= 100)
-# title = Tk.title("Harmony Harvest")
-# input_label =  Label(Tk, text= "Playlist link", font= ('calibre', 50, 'bold'))
-# playlist_link_windget= Entry(Tk, textvariable=playlist_link,font = ('calibre',50,'normal'))
-# add_button =  Button(Tk, text= "Get Songs", command = gety
-# _songs)
-# input_label.pack()
-# #Packing widgets
-# add_button.pack()
-# playlist_link_windget.pack()
-# canvas.pack()
-# Tk.mainloop()
+
+def download_video(playlist_folder, song,video_url):
+    try:
+        video_ref = YouTube(video_url)
+        video = video_ref.streams.get_highest_resolution()
+        video.download(output_path= f"{playlist_folder}/")
+        print(f"{song} downloaded successfully")
+    except Exception as e:
+        print(e)
+
+url = "https://open.spotify.com/playlist/4vliiojT3JgFCBUCHhNzeD?si=19c2219665234f40"
+playlist_name, songs_detail = get_songs(url)
+print(f"Getting Data for ( {playlist_name} ) playlist")
+os.remove(playlist_name) if os.path.exists(playlist_name) else os.makedirs(playlist_name)
+for songs, artist in songs_detail.items():  
+    video_url =  search_youtube(songs, artist)
+    download_video(playlist_name, songs, video_url)

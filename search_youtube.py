@@ -21,7 +21,7 @@ import ssl
 import re
 song_name = "Mary On A Cross"
 song_artist = "Ghost"
-keyword = song_name +" "+ song_artist
+keyword = song_name +" by "+ song_artist
 keyword = keyword.split(" ")
 if len(keyword) > 1:
     keyword = "+".join(keyword)
